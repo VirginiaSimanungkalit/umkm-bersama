@@ -1,21 +1,17 @@
+# app/inference.py
 import numpy as np
 import tensorflow as tf
 import joblib
 import os
 
-# ── Path ke file model ────────────────────────────────────────────────
-# os.path.dirname(__file__) artinya: folder tempat file ini berada
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH  = os.path.join(BASE_DIR, 'models', 'cashflow_lstm.keras')
 SCALER_PATH = os.path.join(BASE_DIR, 'models', 'scaler.pkl')
 
-# ── Load model & scaler (hanya sekali saat pertama dipanggil) ─────────
-# Teknik ini namanya "lazy loading" — tidak load ulang tiap ada request
 _model  = None
 _scaler = None
 
 def _load_model():
-    """Muat model dan scaler dari disk, simpan di memori."""
     global _model, _scaler
     if _model is None:
         print("Loading model...")
@@ -23,53 +19,64 @@ def _load_model():
         _scaler = joblib.load(SCALER_PATH)
         print("Model siap!")
 
-# ── Fungsi utama: prediksi cash flow ─────────────────────────────────
 def prediksi_cashflow(data_30_hari: list) -> dict:
-    """
-    Prediksi net cash flow untuk hari berikutnya.
-    
-    Parameter:
-        data_30_hari: list berisi 30 nilai net cash flow harian (Rupiah)
-                      contoh: [50000, -20000, 75000, ...]
-    
-    Return:
-        dict berisi hasil prediksi dan status
-    """
-    # Validasi input
     if len(data_30_hari) != 30:
         return {
             "error": f"Data harus berisi tepat 30 nilai, diterima: {len(data_30_hari)}"
         }
 
-    # Load model kalau belum
     _load_model()
 
-    # Langkah 1: Scale input ke range 0-1 (sama seperti saat training)
+    # Scale dan prediksi
     arr    = np.array(data_30_hari).reshape(-1, 1)
     scaled = _scaler.transform(arr)
+    X      = scaled.reshape(1, 30, 1)
+    pred_scaled  = _model.predict(X, verbose=0)
+    pred_rupiah  = float(_scaler.inverse_transform(pred_scaled)[0][0])
 
-    # Langkah 2: Reshape ke format yang dimengerti LSTM: (1, 30, 1)
-    X = scaled.reshape(1, 30, 1)
+    # ── Logika status berbasis konteks (lebih robust) ─────────────────
+    # Bandingkan prediksi dengan rata-rata dan tren 7 hari terakhir
+    rata_rata_30  = float(np.mean(data_30_hari))
+    rata_rata_7   = float(np.mean(data_30_hari[-7:]))
+    tren_naik     = rata_rata_7 > rata_rata_30
 
-    # Langkah 3: Prediksi
-    pred_scaled = _model.predict(X, verbose=0)
+    # Hitung prediksi final: gabungkan output model dengan konteks data
+    # Kalau tren 7 hari terakhir naik, boost prediksi ke arah positif
+    if tren_naik and rata_rata_7 > 0:
+        prediksi_final = abs(pred_rupiah) * 0.5 + rata_rata_7 * 0.5
+    elif not tren_naik and rata_rata_7 < 0:
+        prediksi_final = -abs(pred_rupiah) * 0.5 + rata_rata_7 * 0.5
+    else:
+        # Netral: pakai rata-rata sebagai anchor
+        prediksi_final = pred_rupiah * 0.3 + rata_rata_30 * 0.7
 
-    # Langkah 4: Kembalikan ke nilai Rupiah (inverse transform)
-    pred_rupiah = float(_scaler.inverse_transform(pred_scaled)[0][0])
+    # Tentukan status
+    if prediksi_final > 0:
+        status    = "positif"
+        peringatan = None
+    elif prediksi_final < 0:
+        status    = "negatif"
+        peringatan = "Kas diprediksi defisit! Pertimbangkan kurangi pengeluaran."
+    else:
+        status    = "netral"
+        peringatan = "Kas diprediksi seimbang."
 
-    # Langkah 5: Susun response
     return {
-        "prediksi_cashflow_besok": round(pred_rupiah, 2),
-        "status": "positif" if pred_rupiah >= 0 else "negatif",
-        "peringatan": "Kas diprediksi defisit! Pertimbangkan kurangi pengeluaran." 
-                      if pred_rupiah < 0 else None,
+        "prediksi_cashflow_besok": round(prediksi_final, 2),
+        "status": status,
+        "peringatan": peringatan,
         "satuan": "Rupiah"
     }
 
-
-# ── Test sederhana (jalankan langsung untuk cek) ──────────────────────
 if __name__ == '__main__':
-    # Simulasi: 30 hari dengan nilai acak sekitar 50ribu
-    dummy_data = [50000.0] * 30
-    hasil = prediksi_cashflow(dummy_data)
-    print("Hasil prediksi:", hasil)
+    # Test skenario positif
+    dummy_positif = [500000.0] * 30
+    print("Positif:", prediksi_cashflow(dummy_positif))
+
+    # Test skenario negatif
+    dummy_negatif = [-500000.0] * 30
+    print("Negatif:", prediksi_cashflow(dummy_negatif))
+
+    # Test skenario campuran tren naik
+    dummy_naik = [-100000]*23 + [200000, 250000, 300000, 350000, 400000, 450000, 500000]
+    print("Tren naik:", prediksi_cashflow(dummy_naik))
