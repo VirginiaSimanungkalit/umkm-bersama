@@ -11,6 +11,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.inference import prediksi_cashflow
 from app.inference_bcg import prediksi_bcg
+from app.inference_advisory import generate_advisory
 
 # ── Inisialisasi FastAPI ──────────────────────────────────────────────
 app = FastAPI(
@@ -135,4 +136,49 @@ def bcg_matrix_post(request: BCGRequest):
     if "error" in hasil:
         raise HTTPException(status_code=500, detail=hasil["error"])
     
+    return hasil
+
+class AdvisoryRequest(BaseModel):
+    data_30_hari: list[float]
+    produk: list[ProdukInput]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "data_30_hari": [50000.0] * 30,
+                "produk": [
+                    {
+                        "id_produk": "PRD-001",
+                        "nama_produk": "Indomie Goreng",
+                        "harga_jual": 3500,
+                        "harga_pokok": 2700,
+                        "qty_terjual": 850
+                    }
+                ]
+            }
+        }
+
+@app.post("/api/ai/advisory")
+def advisory(request: AdvisoryRequest):
+    """
+    Advisory Layer: gabungkan cashflow forecast + BCG Matrix
+    menjadi rekomendasi bisnis otomatis.
+    
+    Input: data 30 hari cashflow + list produk
+    Output: rekomendasi bisnis lengkap dengan prioritas
+    """
+    # Validasi
+    if len(request.data_30_hari) != 30:
+        raise HTTPException(
+            status_code=400,
+            detail="data_30_hari harus berisi tepat 30 nilai"
+        )
+
+    # Jalankan kedua model
+    cashflow_result = prediksi_cashflow(request.data_30_hari)
+    produk_list     = [p.dict() for p in request.produk]
+    bcg_result      = prediksi_bcg(produk_list)
+
+    # Generate advisory
+    hasil = generate_advisory(cashflow_result, bcg_result)
     return hasil
