@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.inference import prediksi_cashflow
 from app.inference_bcg import prediksi_bcg
 from app.inference_advisory import generate_advisory
+from app.inference_anomaly import prediksi_anomaly
 
 # ── Inisialisasi FastAPI ──────────────────────────────────────────────
 app = FastAPI(
@@ -181,4 +182,65 @@ def advisory(request: AdvisoryRequest):
 
     # Generate advisory
     hasil = generate_advisory(cashflow_result, bcg_result)
+    return hasil
+
+class TransaksiInput(BaseModel):
+    id_transaksi      : str
+    kategori          : str
+    nominal           : float
+    hari_dalam_minggu : int
+    jam_encoded       : int
+    rolling_mean_7d   : float
+    rasio_vs_baseline : float
+
+class AnomalyRequest(BaseModel):
+    transaksi: list[TransaksiInput]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "transaksi": [
+                    {
+                        "id_transaksi": "TRX-001",
+                        "kategori": "HPP",
+                        "nominal": 250000,
+                        "hari_dalam_minggu": 0,
+                        "jam_encoded": 7,
+                        "rolling_mean_7d": 230000,
+                        "rasio_vs_baseline": 1.09
+                    },
+                    {
+                        "id_transaksi": "TRX-002",
+                        "kategori": "HPP",
+                        "nominal": 5000000,
+                        "hari_dalam_minggu": 3,
+                        "jam_encoded": 22,
+                        "rolling_mean_7d": 230000,
+                        "rasio_vs_baseline": 21.7
+                    }
+                ]
+            }
+        }
+
+@app.post("/api/ai/anomaly")
+def anomaly_detection(request: AnomalyRequest):
+    """
+    Deteksi transaksi pengeluaran yang tidak wajar.
+    
+    Input: list transaksi pengeluaran dengan fitur-fitur yang dibutuhkan
+    Output: hasil deteksi anomali per transaksi + pesan peringatan
+    """
+    transaksi_list = [t.dict() for t in request.transaksi]
+
+    if not transaksi_list:
+        raise HTTPException(
+            status_code=400,
+            detail="List transaksi tidak boleh kosong"
+        )
+
+    hasil = prediksi_anomaly(transaksi_list)
+
+    if "error" in hasil:
+        raise HTTPException(status_code=500, detail=hasil["error"])
+
     return hasil

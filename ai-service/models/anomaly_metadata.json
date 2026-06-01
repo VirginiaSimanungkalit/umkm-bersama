@@ -1,0 +1,17 @@
+{
+  "contamination": 0.03,
+  "fitur_cols": [
+    "nominal",
+    "hari_dalam_minggu",
+    "jam_encoded",
+    "rolling_mean_7d",
+    "rasio_vs_baseline"
+  ],
+  "kategori_list": [
+    "HPP",
+    "Operasional",
+    "Overhead"
+  ],
+  "threshold": 0,
+  "catatan": "Model dilatih per kategori. Input wajib: nominal, hari_dalam_minggu, jam_encoded, rolling_mean_7d, rasio_vs_baseline"
+}
