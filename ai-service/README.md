@@ -44,6 +44,26 @@ All trained model files are available for download:
 
 ## Project Structure
 
+ai-service/
+├── app/
+│   ├── main.py                  # FastAPI app — all endpoints
+│   ├── inference.py             # Cash Flow Forecasting logic
+│   ├── inference_bcg.py         # BCG Matrix Classification logic
+│   ├── inference_anomaly.py     # Anomaly Detection logic
+│   └── inference_advisory.py   # Advisory Layer logic
+├── models/                      # Trained model files (.keras, .pkl, .json)
+├── notebooks/
+│   ├── 01_train_lstm.ipynb      # LSTM training notebook
+│   └── 02_bcg_matrix.ipynb     # BCG Matrix exploration notebook
+├── data/
+│   ├── transaksi_bersih.csv     # Cleaned transaction dataset
+│   ├── produk_bersih.csv        # Cleaned product dataset
+│   └── warung_bersih.csv        # Cleaned warung dataset
+├── requirements.txt             # Python dependencies
+├── Procfile                     # Railway start command
+├── runtime.txt                  # Python version for Railway
+└── nixpacks.toml                # Railway build config
+
 ---
 
 ## Tech Stack
@@ -95,7 +115,7 @@ uvicorn app.main:app --reload --port 8000
 Open your browser: http://127.0.0.1:8000/docs
 
 ### Access Production
-
+https://umkm-bersama-production.up.railway.app/docs
 ---
 
 ## API Endpoints
