@@ -1,4 +1,4 @@
-# UMKM Bersama 🏪
+# UMKM Bersama 
 
 > Smart Financial Assistant for Small Warung in Indonesia
 
@@ -26,14 +26,16 @@ UMKM Bersama transforms raw transaction data into strategic business decisions t
 
 | Feature | Description |
 |---------|-------------|
-| 💰 Cash Flow Forecast | Daily cash flow prediction using LSTM Deep Learning |
-| 🔔 Anomaly Alert | Automatic detection of unusual expenditures |
-| 📊 BCG Matrix Dashboard | Product performance classification |
-| ✨ Advisory Layer | Automated business recommendations |
+| Cash Flow Forecast | Daily cash flow prediction using LSTM Deep Learning |
+| Anomaly Alert | Automatic detection of unusual expenditures |
+| BCG Matrix Dashboard | Product performance classification |
+| Advisory Layer | Automated business recommendations |
 
 ---
 
 ## System Architecture
+
+```text
 Frontend (Vercel)
 ↓
 Backend API (Render)
@@ -43,15 +45,19 @@ AI Service (Railway)
 ├── /api/ai/bcg-matrix         → K-Means Model
 ├── /api/ai/anomaly            → Isolation Forest
 └── /api/ai/advisory           → Advisory Layer
+```
 
 ---
 
 ## Repository Structure
+
+```text
 umkm-bersama/
 ├── ai-service/     ← AI Engineer
 ├── backend/        ← Full-Stack Backend
 ├── frontend/       ← Full-Stack Frontend
 └── README.md
+```
 
 Each folder has its own README with setup instructions:
 - [AI Service README](./ai-service/README.md)
@@ -61,8 +67,6 @@ Each folder has its own README with setup instructions:
 ---
 
 ## Screenshots
-
----
 
 <p align="center">
   <img src="./screenshots/login.png" alt="Login Page" width="900">
