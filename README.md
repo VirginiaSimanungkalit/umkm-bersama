@@ -61,8 +61,8 @@ umkm-bersama/
 
 Each folder has its own README with setup instructions:
 - [AI Service README](./ai-service/README.md)
-- [Backend README](./backend/README.md) ← filled by BE team
-- [Frontend README](./frontend/DEVELOPMENT.md) ← filled by FE team
+- [Backend README](./backend/README.md)
+- [Frontend README](./frontend/README.md)
 
 ---
 
