@@ -38,7 +38,7 @@ UMKM Bersama transforms raw transaction data into strategic business decisions t
 ```text
 Frontend (Vercel)
 ↓
-Backend API (Render)
+Backend API (Railway)
 ↓
 AI Service (Railway)
 ├── /api/ai/cashflow-forecast  → LSTM Model
@@ -62,7 +62,7 @@ umkm-bersama/
 Each folder has its own README with setup instructions:
 - [AI Service README](./ai-service/README.md)
 - [Backend README](./backend/README.md) ← filled by BE team
-- [Frontend README](./frontend/README.md) ← filled by FE team
+- [Frontend README](./frontend/DEVELOPMENT.md) ← filled by FE team
 
 ---
 
