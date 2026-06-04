@@ -34,4 +34,4 @@ Pastikan Anda berada di dalam folder frontend sebelum menjalankan perintah termi
 Pasang semua paket/pustaka Node.js yang diperlukan oleh aplikasi React:```npm install```
 ### 3. Jalankan Aplikasi di Mode Pengembangan
 Untuk menyalakan server lokal Vite dengan fitur Hot Module Replacement (HMR):```npm run dev```
-Aplikasi frontend akan aktif dan bisa diakses melalui browser di alamat http://localhost:5173 (atau port default Vite lainnya).
+Aplikasi frontend akan aktif dan bisa diakses melalui browser di alamat http://localhost:3000 (atau port default Vite lainnya).
