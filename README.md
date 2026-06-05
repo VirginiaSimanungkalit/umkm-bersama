@@ -78,8 +78,8 @@ Each folder has its own README with setup instructions:
 
 | Service | URL |
 |---------|-----|
-| Frontend | *(filled by FE team)* |
-| Backend API | *(filled by BE team)* |
+| Frontend | https://project-umkmb-frontend.vercel.app/ |
+| Backend API | https://project-umkmb-backend-production.up.railway.app/ |
 | AI Service | https://umkm-bersama-production.up.railway.app |
 | AI Docs | https://umkm-bersama-production.up.railway.app/docs |
 
@@ -90,7 +90,7 @@ Each folder has its own README with setup instructions:
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React.js, Tailwind CSS, Vercel |
-| Backend | Express.js, MySQL, Render |
+| Backend | Express.js, MySQL, Railway |
 | AI Service | TensorFlow, FastAPI, Scikit-learn, Railway |
 | Data Science | Python, Pandas, Scikit-learn, Google Colab |
 
