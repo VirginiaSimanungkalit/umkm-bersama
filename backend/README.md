@@ -56,23 +56,9 @@ Pasang semua paket/pustaka Node.js yang diperlukan oleh server:
 ``` npm install ```
 
 3. Konfigurasi Environment Variables (.env)
-Buat sebuah file baru bernama .env tepat di dalam folder backend/, lalu lengkapi variabel berikut sesuai konfigurasi server (lokal maupun cloud):
-```
-HOST=localhost
-PORT=5000
+Buat sebuah file baru bernama .env tepat di dalam folder backend/, lalu lengkapi variabel berikut sesuai konfigurasi server (lokal maupun cloud)
 
-# Konfigurasi Database Baru Mengarah ke Aiven Cloud
-MYSQLHOST=localhost
-MYSQLPORT=3306
-MYSQLUSER=root
-MYSQLPASSWORD=
-MYSQLDATABASE=railway
-
-# Kunci Rahasia Keamanan JWT Token
-ACCESS_TOKEN_KEY=kunci_rahasia_access_token_umkm_2026
-REFRESH_TOKEN_KEY=kunci_rahasia_refresh_token_umkm_2026
-```
 4. Menjalankan Server Aplikasi
 Pilih salah satu perintah di bawah ini yang sesuai dengan kebutuhan Anda:
 -> Mode Pengembangan (Auto-Reload via Nodemon): ``` npm run start:dev ```
--> Mode Produksi (Standard Node.js): ``` npm run start ```
+   -> Mode Produksi (Standard Node.js): ``` npm run start ```
